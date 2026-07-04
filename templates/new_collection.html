@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Новая коллекция — Zenith{% endblock %}
+{% block content %}
+<div class="container narrow">
+    <a href="/collections" class="back-link">← Назад</a>
+    <div class="auth-card">
+        <h1 class="auth-title">Новая коллекция</h1>
+        <form method="POST" class="auth-form">
+            <input type="text" name="name" placeholder="Название коллекции" required class="form-input">
+            <textarea name="description" placeholder="Описание (необязательно)" rows="3" class="form-textarea"></textarea>
+            <label class="checkbox-label">
+                <input type="checkbox" name="public" checked> Публичная коллекция
+            </label>
+            <button type="submit" class="btn btn-primary btn-full">Создать</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

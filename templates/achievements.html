@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}{{ t('achievements') }} — Zenith{% endblock %}
+{% block content %}
+<div class="container">
+    <header class="page-header">
+        <h1 class="page-title">
+            <span class="material-symbols-outlined" style="vertical-align: middle; margin-right: 8px;">emoji_events</span>
+            {{ t('achievements') }}
+        </h1>
+        <p class="page-subtitle">
+            {% if current_user.is_authenticated %}
+            {{ t('received') }}: {{ user_unlocked|length }} {{ t('from') }} {{ achievements|length }}
+            {% else %}
+            {{ t('enter_to_post') }}
+            {% endif %}
+        </p>
+    </header>
+
+    {% if current_user.is_authenticated %}
+    <div class="user-stats-row">
+        <div class="stat-mini">
+            <div class="stat-mini-value">{{ current_user.xp }}</div>
+            <div class="stat-mini-label">Всего XP</div>
+        </div>
+        <div class="stat-mini">
+            <div class="stat-mini-value">{{ current_user.level }}</div>
+            <div class="stat-mini-label">Уровень</div>
+        </div>
+        <div class="stat-mini">
+            <div class="stat-mini-value">
+                {{ current_user.streak.current_streak if current_user.streak else 0 }}
+                <span class="material-symbols-outlined" style="font-size: 1.2rem; vertical-align: middle; color: #ff6600;">local_fire_department</span>
+            </div>
+            <div class="stat-mini-label">Стрик</div>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="achievements-grid">
+        {% for achievement in achievements %}
+        {% set unlocked = achievement.id in user_unlocked %}
+        <div class="achievement-card {{ 'unlocked' if unlocked else 'locked' }} rarity-{{ achievement.rarity }}">
+            <span class="material-symbols-outlined achievement-icon">
+                {{ achievement.icon }}
+            </span>
+            <div class="achievement-name">{{ achievement.name }}</div>
+            <div class="achievement-desc">{{ achievement.description }}</div>
+            <div class="achievement-req">Требуется: {{ achievement.condition_value }} {{ achievement.condition_type }}</div>
+            <div class="achievement-xp">+{{ achievement.xp_reward }} XP</div>
+            <div class="achievement-rarity rarity-label-{{ achievement.rarity }}">{{ achievement.rarity }}</div>
+            {% if unlocked %}
+            <div class="achievement-status">
+                <span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle;">check_circle</span>
+                Получено
+            </div>
+            {% else %}
+            <div class="achievement-status">
+                <span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle;">lock</span>
+                Заблокировано
+            </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

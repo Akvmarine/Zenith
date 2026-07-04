@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}{{ user.username }} — Zenith{% endblock %}
+{% block content %}
+<div class="container narrow">
+    <div class="profile-cover" style="background-image: url('/uploads/{{ user.cover }}')">
+        <div class="profile-avatar"><img src="/uploads/{{ user.avatar }}" alt="{{ user.username }}"></div>
+    </div>
+    <div class="profile-info">
+        <h1 class="profile-name">{{ user.username }}{% if user.is_admin %}<span class="admin-badge">АДМИН</span>{% endif %}<span class="level-badge" style="background: {{ level_info.color }}">{{ level_info.name }} (Ур. {{ level_info.level }})</span></h1>
+        {% if user.bio %}<p class="profile-bio">{{ user.bio }}</p>{% endif %}
+        <div class="profile-stats">
+            <span><span class="material-symbols-outlined" style="font-size: 16px; vertical-align: middle;">article</span> <strong>{{ posts|length }}</strong> {{ t('posts') }}</span>
+            <span><span class="material-symbols-outlined" style="font-size: 16px; vertical-align: middle;">group</span> <strong>{{ followers_count }}</strong> {{ t('followers') }}</span>
+            <span><span class="material-symbols-outlined" style="font-size: 16px; vertical-align: middle;">person_add</span> <strong>{{ following_count }}</strong> {{ t('followings') }}</span>
+            <span><span class="material-symbols-outlined" style="font-size: 16px; vertical-align: middle; color: #ff6666;">favorite</span> <strong>{{ total_likes }}</strong> {{ t('likes') }}</span>
+            <span><span class="material-symbols-outlined" style="font-size: 16px; vertical-align: middle;">chat_bubble</span> <strong>{{ total_comments }}</strong> коммент.</span>
+        </div>
+        {% if user.streak and user.streak.current_streak > 0 %}<div class="streak-display"><span class="material-symbols-outlined streak-fire">local_fire_department</span><span class="streak-count">{{ user.streak.current_streak }}</span><span class="streak-label">{{ t('days_streak') }}</span><span class="streak-best">({{ t('record') }}: {{ user.streak.longest_streak }})</span></div>{% endif %}
+        <div class="level-progress"><div class="level-progress-header"><span>XP: {{ level_info.xp }}</span>{% if level_info.next_xp %}<span>до {{ level_info.next_level }}: {{ level_info.next_xp - level_info.xp }} XP</span>{% endif %}</div><div class="level-progress-bar"><div class="level-progress-fill" style="width: {{ level_info.progress }}%; background: {{ level_info.color }}"></div></div></div>
+        {% if current_user.is_authenticated and current_user.id == user.id %}<p class="percentile-text">{{ t('more_active') }} {{ percentile }}{{ t('percent_users') }}</p>{% endif %}
+        <div class="profile-actions">
+            {% if current_user.is_authenticated and current_user.id != user.id %}<form action="/follow/{{ user.username }}" method="POST" style="display:inline"><button type="submit" class="btn btn-primary">{{ 'Отписаться' if is_following else 'Подписаться' }}</button></form>{% endif %}
+            {% if current_user.is_authenticated and current_user.id == user.id %}<a href="/profile/edit" class="btn btn-primary">{{ t('edit_profile') }}</a><a href="/achievements" class="btn btn-primary"><span class="material-symbols-outlined" style="vertical-align: middle; margin-right: 4px;">emoji_events</span>{{ t('achievements') }}</a>{% endif %}
+        </div>
+    </div>
+    {% if heatmap_data %}<div class="heatmap-section"><h2 class="section-title">{{ t('activity_year') }}</h2><div class="heatmap-container" id="heatmap"></div><div class="heatmap-legend"><span>{{ t('less') }}</span><div class="heatmap-cell" data-level="0"></div><div class="heatmap-cell" data-level="1"></div><div class="heatmap-cell" data-level="2"></div><div class="heatmap-cell" data-level="3"></div><div class="heatmap-cell" data-level="4"></div><span>{{ t('more') }}</span></div></div>{% endif %}
+    {% if monthly_stats %}<div class="chart-section"><h2 class="section-title">{{ t('posts_by_month') }}</h2><div class="bar-chart" id="barChart"></div></div>{% endif %}
+    {% if top_topics %}<div class="top-topics"><h2 class="section-title">{{ t('favorite_topics') }}</h2><div class="topics-cloud">{% for topic, count in top_topics %}<span class="topic-bubble" style="font-size: {{ 0.9 + count * 0.1 }}rem">{{ topic }} ({{ count }})</span>{% endfor %}</div></div>{% endif %}
+    <div class="achievements-section"><h2 class="section-title"><span class="material-symbols-outlined" style="vertical-align: middle; margin-right: 8px;">emoji_events</span>{{ t('achievements') }} ({{ user_achievements|length }}/{{ all_achievements|length }})</h2><div class="achievements-grid">{% for achievement in all_achievements %}{% set unlocked = achievement.id in user_unlocked %}<div class="achievement-card {{ 'unlocked' if unlocked else 'locked' }} rarity-{{ achievement.rarity }}"><span class="material-symbols-outlined achievement-icon">{{ achievement.icon }}</span><div class="achievement-name">{{ achievement.name }}</div><div class="achievement-desc">{{ achievement.description }}</div><div class="achievement-xp">+{{ achievement.xp_reward }} XP</div>{% if unlocked %}<div class="achievement-status"><span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle;">check_circle</span> Получено</div>{% else %}<div class="achievement-status"><span class="material-symbols-outlined" style="font-size: 14px; vertical-align: middle;">lock</span> Заблокировано</div>{% endif %}</div>{% endfor %}</div></div>
+    <h2 class="section-title">{{ t('user_posts') }}</h2>
+    <div class="posts-feed">{% for post in posts %}<article class="post-card"><div class="post-header"><span class="post-topic">{{ post.topic }}</span><time class="post-date">{{ format_msk(post.created_at) }}</time></div><h3 class="post-title"><a href="/post/{{ post.id }}">{{ post.title }}</a></h3><p class="post-content">{{ post.content[:200] }}{% if post.content|length > 200 %}...{% endif %}</p>{% if post.image %}<img src="/uploads/{{ post.image }}" class="post-image" alt="">{% endif %}<div class="post-footer"><span class="btn-like"><span class="material-symbols-outlined" style="font-size: 18px; vertical-align: middle;">favorite_border</span> {{ post.likes }}</span><a href="/post/{{ post.id }}" class="btn-comments"><span class="material-symbols-outlined" style="font-size: 18px; vertical-align: middle;">chat_bubble</span> {{ post.comments|length }}</a></div></article>{% else %}<p class="no-comments">{{ t('no_user_posts') }}</p>{% endfor %}</div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+const heatmapData = {{ heatmap_data|tojson }}; const heatmapContainer = document.getElementById('heatmap');
+if (heatmapContainer && Object.keys(heatmapData).length > 0) { const today = new Date(); let html = '<div class="heatmap-grid">'; for (let i = 364; i >= 0; i--) { const date = new Date(today); date.setDate(date.getDate() - i); const key = date.toISOString().split('T')[0]; const val = heatmapData[key] || 0; let level = 0; if (val > 0) level = 1; if (val >= 3) level = 2; if (val >= 5) level = 3; if (val >= 10) level = 4; html += `<div class="heatmap-cell" data-level="${level}" title="${key}: ${val} действий"></div>`; } html += '</div>'; heatmapContainer.innerHTML = html; }
+const monthlyStats = {{ monthly_stats|tojson }}; const barChart = document.getElementById('barChart');
+if (barChart && monthlyStats.length > 0) { const maxPosts = Math.max(...monthlyStats.map(m => m[1]), 1); let html = ''; monthlyStats.forEach(([month, count]) => { const height = (count / maxPosts) * 100; const label = month.split('-')[1]; html += `<div class="bar-item"><div class="bar" style="height: ${height}%"><span>${count}</span></div><div class="bar-label">${label}</div></div>`; }); barChart.innerHTML = html; }
+</script>
+{% endblock %}

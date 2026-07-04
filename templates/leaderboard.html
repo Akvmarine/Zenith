@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Рейтинг — Zenith{% endblock %}
+{% block content %}
+<div class="container">
+    <header class="page-header">
+        <h1 class="page-title">
+            <span class="material-symbols-outlined" style="vertical-align: middle; margin-right: 8px;">emoji_events</span>
+            Рейтинг пользователей
+        </h1>
+    </header>
+    
+    <div class="leaderboard-list">
+        {% for username, post_count, like_count, xp in users %}
+        <div class="leaderboard-card {% if loop.index <= 3 %}top-three{% endif %}">
+            <div class="leaderboard-rank">
+                {% if loop.index == 1 %}
+                <span class="medal gold">🥇</span>
+                {% elif loop.index == 2 %}
+                <span class="medal silver">🥈</span>
+                {% elif loop.index == 3 %}
+                <span class="medal bronze">🥉</span>
+                {% else %}
+                <span class="rank-number">#{{ loop.index }}</span>
+                {% endif %}
+            </div>
+            <a href="/user/{{ username }}" class="leaderboard-user">{{ username }}</a>
+            <div class="leaderboard-stats">
+                <span class="stat-badge"><span class="material-symbols-outlined">article</span> {{ post_count or 0 }}</span>
+                <span class="stat-badge"><span class="material-symbols-outlined" style="color: #ff6666;">favorite</span> {{ like_count or 0 }}</span>
+                <span class="stat-badge xp-badge"><span class="material-symbols-outlined">stars</span> {{ xp or 0 }} XP</span>
+            </div>
+        </div>
+        {% else %}
+        <p class="no-comments">Пока нет пользователей</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

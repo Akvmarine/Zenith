@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Статистика{% endblock %}
+{% block content %}
+<div class="container">
+    <header class="page-header">
+        <h1 class="page-title">Статистика сайта</h1>
+    </header>
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-number">{{ total_posts }}</div>
+            <div class="stat-label">Всего постов</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ total_users }}</div>
+            <div class="stat-label">Пользователей</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ total_comments }}</div>
+            <div class="stat-label">Комментариев</div>
+        </div>
+    </div>
+    <h2 class="section-title">Топ постов</h2>
+    {% for post in top_posts %}
+    <div class="post-card">
+        <h3 class="post-title"><a href="/post/{{ post.id }}">{{ post.title }}</a></h3>
+        <p>❤️ {{ post.likes }} · 💬 {{ post.comments|length }}</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

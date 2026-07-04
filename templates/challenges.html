@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block title %}Челленджи — Zenith{% endblock %}
+{% block content %}
+<div class="container">
+    <header class="page-header">
+        <h1 class="page-title">
+            <span class="material-symbols-outlined" style="vertical-align: middle; margin-right: 8px;">flag</span>
+            Активные челленджи
+        </h1>
+    </header>
+    
+    <div class="challenges-grid">
+        {% for challenge in challenges %}
+        {% set progress = user_progress.get(challenge.id) %}
+        <div class="challenge-card {% if progress and progress.completed %}completed{% endif %}">
+            <div class="challenge-header">
+                <h3 class="challenge-title">{{ challenge.title }}</h3>
+                {% if progress and progress.completed %}
+                <span class="challenge-badge completed">✅ Выполнено</span>
+                {% else %}
+                <span class="challenge-badge active">🎯 Активен</span>
+                {% endif %}
+            </div>
+            <p class="challenge-desc">{{ challenge.description }}</p>
+            <div class="challenge-progress">
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: {{ (progress.current_count / challenge.target * 100) if progress else 0 }}%"></div>
+                </div>
+                <div class="progress-text">
+                    {{ progress.current_count if progress else 0 }} / {{ challenge.target }}
+                </div>
+            </div>
+            <div class="challenge-reward">
+                <span class="material-symbols-outlined">stars</span>
+                +{{ challenge.reward_xp }} XP
+            </div>
+            {% if not (progress and progress.completed) %}
+            <button class="btn btn-primary challenge-action" onclick="completeChallenge({{ challenge.id }})">
+                Выполнить действие
+            </button>
+            {% endif %}
+        </div>
+        {% else %}
+        <p class="no-comments">Нет активных челленджей</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function completeChallenge(challengeId) {
+    fetch('/challenge/' + challengeId + '/progress', {
+        method: 'POST',
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.status === 'completed') {
+            alert('🎉 Челлендж выполнен! +' + data.xp + ' XP');
+            location.reload();
+        } else if (data.status === 'ok') {
+            alert('Прогресс: ' + data.count + '/' + data.target);
+            location.reload();
+        }
+    });
+}
+</script>
+{% endblock %}

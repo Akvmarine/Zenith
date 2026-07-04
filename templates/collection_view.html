@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}{{ collection.name }} — Zenith{% endblock %}
+{% block content %}
+<div class="container">
+    <a href="/collections" class="back-link">← Все коллекции</a>
+    
+    <div class="collection-header">
+        <h1 class="page-title" style="font-size: 1.8rem;">{{ collection.name }}</h1>
+        {% if collection.description %}<p class="page-subtitle">{{ collection.description }}</p>{% endif %}
+        <p class="collection-meta">Автор: {{ collection.user.username }} · {{ collection.items|length }} постов · {% if collection.is_public %} Публичная{% else %}🔒 Приватная{% endif %}</p>
+        {% if current_user.is_authenticated and current_user.id == collection.user_id %}
+        <a href="/collection/{{ collection.id }}/edit" class="btn btn-primary" style="margin-top: 16px;">Редактировать</a>
+        {% endif %}
+    </div>
+
+    <div class="posts-feed">
+        {% for post in posts %}
+        <article class="post-card">
+            <div class="post-header">
+                <span class="post-topic">{{ post.topic }}</span>
+                <time class="post-date">{{ format_msk(post.created_at) }}</time>
+            </div>
+            <h3 class="post-title"><a href="/post/{{ post.id }}">{{ post.title }}</a></h3>
+            <p class="post-author"><a href="/user/{{ post.author.username }}">👤 {{ post.author.username }}</a></p>
+            <p class="post-content">{{ post.content[:200] }}{% if post.content|length > 200 %}...{% endif %}</p>
+            <div class="post-footer">
+                <span class="btn-like">♡ {{ post.likes }}</span>
+                <a href="/post/{{ post.id }}" class="btn-comments">💬 {{ post.comments|length }}</a>
+            </div>
+        </article>
+        {% else %}
+        <p class="no-comments">В коллекции пока нет постов</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

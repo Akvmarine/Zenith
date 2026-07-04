@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Вход — Микро-блог{% endblock %}
+{% block content %}
+<div class="container narrow">
+    <div class="auth-card">
+        <h1 class="auth-title">Вход</h1>
+        <form method="POST" class="auth-form">
+            <input type="text" name="username" placeholder="Имя пользователя" required class="form-input">
+            <input type="password" name="password" placeholder="Пароль" required class="form-input">
+            <button type="submit" class="btn btn-primary btn-full">Войти</button>
+        </form>
+        <p class="auth-switch">Нет аккаунта? <a href="/register">Зарегистрироваться</a></p>
+    </div>
+</div>
+{% endblock %}

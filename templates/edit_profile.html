@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Редактировать профиль{% endblock %}
+{% block content %}
+<div class="container narrow">
+    <div class="auth-card">
+        <h1 class="auth-title">Редактировать профиль</h1>
+        <form method="POST" class="auth-form" enctype="multipart/form-data">
+            <textarea name="bio" placeholder="О себе..." rows="4" class="form-textarea">{{ current_user.bio }}</textarea>
+            <label class="file-label">Аватарка:
+                <input type="file" name="avatar" accept="image/*" class="file-input">
+            </label>
+            <label class="file-label">Обложка:
+                <input type="file" name="cover" accept="image/*" class="file-input">
+            </label>
+            <button type="submit" class="btn btn-primary btn-full">Сохранить</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

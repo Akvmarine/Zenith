@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Регистрация — Zenith{% endblock %}
+{% block content %}
+<div style="max-width: 500px; margin: 40px auto; padding: 32px; background: #2d1520; border: 2px solid #8b2035; border-radius: 16px;">
+    <h1 style="color: #e8e8e8; font-family: 'Orbitron', sans-serif; text-align: center; margin-bottom: 24px;">
+        <span class="material-symbols-outlined" style="vertical-align: middle; color: #a83250;">person_add</span>
+        Регистрация
+    </h1>
+
+    <form method="POST" style="display: flex; flex-direction: column; gap: 16px;">
+        <input type="text" name="username" placeholder="Имя пользователя" required
+               style="background: #1a0a0f; border: 1px solid #8b2035; border-radius: 8px; padding: 12px; color: #e8e8e8; font-size: 1rem;">
+        <input type="password" name="password" placeholder="Пароль" required
+               style="background: #1a0a0f; border: 1px solid #8b2035; border-radius: 8px; padding: 12px; color: #e8e8e8; font-size: 1rem;">
+        <button type="submit" style="background: #8b2035; color: #fff; border: none; padding: 12px; border-radius: 50px; cursor: pointer; font-weight: 700; font-size: 1rem;">
+            Зарегистрироваться
+        </button>
+    </form>
+
+    <p style="text-align: center; color: #707070; margin-top: 20px;">
+        Уже есть аккаунт? <a href="/login" style="color: #a83250;">Войти</a>
+    </p>
+</div>
+{% endblock %}

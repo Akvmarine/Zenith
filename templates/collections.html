@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Коллекции — Zenith{% endblock %}
+{% block content %}
+<div class="container">
+    <header class="page-header">
+        <h1 class="page-title">Коллекции</h1>
+        <p class="page-subtitle">Подборки постов по темам</p>
+    </header>
+
+    {% if current_user.is_authenticated %}
+    <div style="text-align: center; margin-bottom: 30px;">
+        <a href="/collection/new" class="btn btn-primary">+ Создать коллекцию</a>
+    </div>
+
+    <h2 class="section-title">Мои коллекции</h2>
+    <div class="collections-grid">
+        {% for collection in my_collections %}
+        <a href="/collection/{{ collection.id }}" class="collection-card">
+            <div class="collection-name">{{ collection.name }}</div>
+            <div class="collection-meta">{{ collection.items|length }} постов · {% if collection.is_public %}🌍 Публичная{% else %}🔒 Приватная{% endif %}</div>
+        </a>
+        {% else %}
+        <p class="no-comments">У вас пока нет коллекций</p>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <h2 class="section-title" style="margin-top: 40px;">Публичные коллекции</h2>
+    <div class="collections-grid">
+        {% for collection in public_collections %}
+        <a href="/collection/{{ collection.id }}" class="collection-card">
+            <div class="collection-name">{{ collection.name }}</div>
+            <div class="collection-author">by {{ collection.user.username }}</div>
+            <div class="collection-meta">{{ collection.items|length }} постов</div>
+        </a>
+        {% else %}
+        <p class="no-comments">Публичных коллекций пока нет</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

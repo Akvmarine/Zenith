@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}{{ t('new_post') }} — Zenith{% endblock %}
+{% block content %}
+<div class="container narrow">
+    <a href="/" class="back-link"><span class="material-symbols-outlined" style="vertical-align: middle;">arrow_back</span> {{ t('back') }}</a>
+    <div class="create-post-card">
+        <h2 class="card-title"><span class="material-symbols-outlined" style="vertical-align: middle; margin-right: 8px;">auto_awesome</span>{{ t('new_post') }}</h2>
+        <form action="/add_post" method="POST" class="post-form" enctype="multipart/form-data">
+            <input type="text" name="title" placeholder="{{ t('title_placeholder') }}" required class="form-input">
+            <textarea name="content" placeholder="{{ t('content_placeholder') }} (Markdown + #теги)" rows="10" required class="form-textarea"></textarea>
+            <input type="text" name="topic" placeholder="{{ t('topic_placeholder') }}" class="form-input">
+            <label class="file-label file-label-white">📎 {{ t('image') }}<input type="file" name="image" accept="image/*" class="file-input"></label>
+            <div class="form-row"><label class="checkbox-label"><input type="checkbox" name="draft"> {{ t('draft') }}</label><button type="submit" class="btn btn-primary"><span class="material-symbols-outlined" style="vertical-align: middle; margin-right: 6px;">send</span>{{ t('publish') }}</button></div>
+        </form>
+    </div>
+</div>
+{% endblock %}

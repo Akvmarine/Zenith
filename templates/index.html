@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% block title %}Лента — Zenith{% endblock %}
+{% block content %}
+<style>
+    .create-post-card { background: #2d1520; border: 2px solid #8b2035; border-radius: 16px; padding: 24px; margin-bottom: 32px; }
+    .create-post-card h2 { color: #e8e8e8; font-family: 'Orbitron', sans-serif; font-size: 1.3rem; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+    .post-form { display: flex; flex-direction: column; gap: 16px; }
+    .form-input, .form-textarea { background: #1a0a0f; border: 1px solid #8b2035; border-radius: 8px; padding: 12px 16px; color: #e8e8e8; font-size: 0.95rem; font-family: 'Rajdhani', sans-serif; width: 100%; box-sizing: border-box; }
+    .form-input:focus, .form-textarea:focus { outline: none; border-color: #a83250; }
+    .form-textarea { min-height: 120px; resize: vertical; }
+    .form-row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+    .form-row .form-input { flex: 1; min-width: 200px; }
+    .file-label-white { display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; background: #e8e8e8; color: #1a0a0f; border-radius: 50px; cursor: pointer; font-weight: 600; font-size: 0.9rem; }
+    .file-label-white:hover { background: #fff; }
+    .file-input { display: none; }
+    .btn-primary { background: linear-gradient(135deg, #8b2035, #a83250); color: #fff; border: none; padding: 12px 24px; border-radius: 50px; font-weight: 700; cursor: pointer; font-family: 'Orbitron', sans-serif; }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(139, 32, 53, 0.5); }
+    .posts-feed { display: flex; flex-direction: column; gap: 20px; }
+    .post-card { background: #2d1520; border: 1px solid #8b2035; border-radius: 12px; padding: 20px; }
+    .post-card:hover { border-color: #a83250; }
+    .post-header { display: flex; justify-content: space-between; margin-bottom: 12px; }
+    .post-topic { background: rgba(139, 32, 53, 0.3); color: #e8e8e8; padding: 4px 12px; border-radius: 50px; font-size: 0.8rem; font-weight: 600; }
+    .post-date { color: #707070; font-size: 0.85rem; }
+    .post-title { margin: 0 0 8px 0; }
+    .post-title a { color: #e8e8e8; text-decoration: none; font-size: 1.2rem; font-weight: 700; }
+    .post-title a:hover { color: #a83250; }
+    .post-author { color: #a83250; font-size: 0.9rem; margin-bottom: 12px; }
+    .post-content { color: #c0c0c0; line-height: 1.6; margin-bottom: 16px; }
+    .post-footer { display: flex; gap: 16px; align-items: center; padding-top: 12px; border-top: 1px solid rgba(139, 32, 53, 0.3); }
+    .btn-like, .btn-bookmark, .btn-comments { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 50px; border: 1px solid #8b2035; background: transparent; color: #e8e8e8; cursor: pointer; font-weight: 600; font-size: 0.9rem; text-decoration: none; }
+    .btn-like:hover, .btn-bookmark:hover, .btn-comments:hover { background: #8b2035; color: #fff; }
+    .btn-like.liked { background: #8b2035; color: #fff; }
+    .btn-bookmark.active { background: #8b2035; color: #fff; }
+    .btn-like .material-symbols-outlined, .btn-bookmark .material-symbols-outlined { font-size: 18px; }
+    .no-posts { text-align: center; color: #707070; padding: 60px 20px; }
+</style>
+
+<div class="container">
+    <header class="page-header" style="text-align: center; margin-bottom: 40px;">
+        <h1 class="page-title" style="font-family: 'Orbitron', sans-serif; font-size: 2rem; color: #e8e8e8;">Лента</h1>
+        <p class="page-subtitle" style="color: #707070;">Пиши мысли, делись новостями</p>
+    </header>
+
+    {% if current_user.is_authenticated %}
+    <div class="create-post-card">
+        <h2><span class="material-symbols-outlined" style="color: #a83250;">auto_awesome</span> Новая запись</h2>
+        <form action="/add_post" method="POST" class="post-form" enctype="multipart/form-data">
+            <input type="text" name="title" placeholder="Заголовок..." required class="form-input">
+            <textarea name="content" placeholder="О чём думаешь? (Markdown + #теги)" rows="5" required class="form-textarea"></textarea>
+            <div class="form-row">
+                <input type="text" name="topic" placeholder="Тема" class="form-input">
+                <label class="file-label-white"><span class="material-symbols-outlined" style="font-size: 18px;">attach_file</span> Изображение<input type="file" name="image" accept="image/*" class="file-input"></label>
+                <button type="submit" class="btn-primary">Опубликовать</button>
+            </div>
+        </form>
+    </div>
+    {% else %}
+    <div style="text-align: center; padding: 40px; background: #2d1520; border-radius: 16px; margin-bottom: 32px;">
+        <p style="color: #e8e8e8; font-size: 1.1rem;">
+            <a href="/login" style="color: #a83250; text-decoration: none; font-weight: 600;">Войдите</a>, чтобы создавать посты
+        </p>
+    </div>
+    {% endif %}
+
+    <div class="posts-feed">
+        {% for post in posts %}
+        <article class="post-card">
+            <div class="post-header">
+                <span class="post-topic">{{ post.topic }}</span>
+                <time class="post-date">{{ format_msk(post.created_at) }}</time>
+            </div>
+            <h3 class="post-title"><a href="/post/{{ post.id }}">{{ post.title }}</a></h3>
+            <p class="post-author">
+                <span class="material-symbols-outlined" style="font-size: 16px; vertical-align: middle;">person</span>
+                {{ post.author.username }}
+            </p>
+            <p class="post-content">{{ post.content[:200] }}{% if post.content|length > 200 %}...{% endif %}</p>
+            <div class="post-footer">
+                {% if current_user.is_authenticated %}
+                <form action="/like/{{ post.id }}" method="POST" style="display:inline;">
+                    <button type="submit" class="btn-like {% if post.id in liked_post_ids %}liked{% endif %}">
+                        <span class="material-symbols-outlined">favorite{% if post.id in liked_post_ids %}{% else %}_border{% endif %}</span>
+                        <span class="like-count">{{ post.likes }}</span>
+                    </button>
+                </form>
+                <form action="/bookmark/{{ post.id }}" method="POST" style="display:inline;">
+                    <button type="submit" class="btn-bookmark {% if post.id in bookmark_ids %}active{% endif %}">
+                        <span class="material-symbols-outlined">bookmark{% if post.id in bookmark_ids %}{% else %}_border{% endif %}</span>
+                    </button>
+                </form>
+                {% else %}
+                <span class="btn-like">
+                    <span class="material-symbols-outlined">favorite</span>
+                    {{ post.likes }}
+                </span>
+                {% endif %}
+                <a href="/post/{{ post.id }}" class="btn-comments">
+                    <span class="material-symbols-outlined">chat_bubble</span>
+                    {{ post.comments|length }}
+                </a>
+            </div>
+        </article>
+        {% else %}
+        <div class="no-posts">
+            <span class="material-symbols-outlined" style="font-size: 64px; color: #8b2035; display: block; margin-bottom: 16px;">auto_awesome</span>
+            <p>Пока нет записей. Будь первым!</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

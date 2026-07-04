@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %}{{ post.title }} — Zenith{% endblock %}
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto; padding: 20px;">
+    <a href="/" style="color: #a83250; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; margin-bottom: 20px;">
+        <span class="material-symbols-outlined">arrow_back</span> Назад к ленте
+    </a>
+
+    <article style="background: #2d1520; border: 2px solid #8b2035; border-radius: 16px; padding: 32px;">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 20px; color: #707070; font-size: 0.9rem;">
+            <span>{{ post.topic }}</span>
+            <time>{{ format_msk(post.created_at) }}</time>
+        </div>
+
+        <h1 style="font-size: 2rem; color: #e8e8e8; margin: 0 0 16px 0; font-family: 'Rajdhani', sans-serif;">{{ post.title }}</h1>
+
+        <div style="color: #a83250; font-weight: 600; margin-bottom: 24px; display: flex; align-items: center; gap: 8px;">
+            <span class="material-symbols-outlined">person</span>
+            {{ post.author.username }}
+        </div>
+
+        {% if post.image %}
+        <img src="/uploads/{{ post.image }}" style="max-width: 100%; border-radius: 12px; margin-bottom: 24px;" alt="">
+        {% endif %}
+
+        <div style="font-size: 1.1rem; line-height: 1.6; color: #c0c0c0; margin-bottom: 32px; white-space: pre-wrap;">{{ post.content }}</div>
+
+        <div style="display: flex; gap: 12px; flex-wrap: wrap; padding-top: 24px; border-top: 1px solid #8b2035;">
+            {% if current_user.is_authenticated %}
+            <form action="/like/{{ post.id }}" method="POST" style="display:inline;">
+                <button type="submit" style="background: transparent; border: 1px solid #8b2035; color: #e8e8e8; padding: 10px 20px; border-radius: 50px; cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 8px;">
+                    <span class="material-symbols-outlined">favorite{% if post.id in liked_post_ids %}{% else %}_border{% endif %}</span>
+                    Нравится ({{ post.likes }})
+                </button>
+            </form>
+            <form action="/bookmark/{{ post.id }}" method="POST" style="display:inline;">
+                <button type="submit" style="background: transparent; border: 1px solid #8b2035; color: #e8e8e8; padding: 10px 20px; border-radius: 50px; cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 8px;">
+                    <span class="material-symbols-outlined">bookmark{% if post.id in bookmark_ids %}{% else %}_border{% endif %}</span>
+                    {% if post.id in bookmark_ids %}В закладках{% else %}В закладки{% endif %}
+                </button>
+            </form>
+            {% else %}
+            <span style="display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; border: 1px solid #8b2035; border-radius: 50px; color: #e8e8e8;">
+                <span class="material-symbols-outlined">favorite</span>
+                {{ post.likes }}
+            </span>
+            {% endif %}
+
+            {% if current_user.is_authenticated and (current_user.id == post.author_id or current_user.is_admin) %}
+            <form action="/delete/{{ post.id }}" method="POST" style="display:inline; margin-left: auto;">
+                <button type="submit" onclick="return confirm('Удалить?')" style="background: transparent; border: 1px solid #ff4444; color: #ff4444; padding: 10px 20px; border-radius: 50px; cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 8px;">
+                    <span class="material-symbols-outlined">delete</span>
+                    Удалить
+                </button>
+            </form>
+            {% endif %}
+        </div>
+    </article>
+
+    <section style="background: #2d1520; border: 1px solid #8b2035; border-radius: 16px; padding: 24px; margin-top: 24px;">
+        <h2 style="color: #e8e8e8; margin-top: 0; display: flex; align-items: center; gap: 8px;">
+            <span class="material-symbols-outlined">chat_bubble</span>
+            Комментарии ({{ post.comments|length }})
+        </h2>
+
+        {% if current_user.is_authenticated %}
+        <form action="/add_comment/{{ post.id }}" method="POST" style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px;">
+            <textarea name="text" placeholder="Написать комментарий..." rows="3" required style="background: #1a0a0f; border: 1px solid #8b2035; border-radius: 8px; padding: 12px; color: #e8e8e8; font-size: 0.95rem;"></textarea>
+            <button type="submit" style="background: #8b2035; color: #fff; border: none; padding: 10px 20px; border-radius: 50px; cursor: pointer; font-weight: 600; align-self: flex-start; display: inline-flex; align-items: center; gap: 8px;">
+                <span class="material-symbols-outlined">send</span>
+                Отправить
+            </button>
+        </form>
+        {% endif %}
+
+        {% for comment in post.comments|reverse %}
+        <div style="background: #1a0a0f; padding: 16px; border-radius: 8px; border-left: 3px solid #8b2035; margin-bottom: 12px;">
+            <div style="color: #a83250; font-weight: 600; display: flex; align-items: center; gap: 6px;">
+                <span class="material-symbols-outlined" style="font-size: 18px;">person</span>
+                {{ comment.author_name }}
+            </div>
+            <div style="color: #c0c0c0; margin-top: 4px;">{{ comment.text }}</div>
+            <div style="color: #707070; font-size: 0.8rem; margin-top: 8px;">{{ format_msk(comment.created_at) }}</div>
+        </div>
+        {% else %}
+        <p style="color: #707070; text-align: center;">Комментариев пока нет.</p>
+        {% endfor %}
+    </section>
+</div>
+{% endblock %}

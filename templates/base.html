@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Zenith{% endblock %}</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✦</text></svg>">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&display=swap">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        /* === НАВБАР === */
+        .z-navbar {
+            position: relative !important;
+            background: #1a0a0f !important;
+            border-bottom: 1px solid #8b2035 !important;
+            padding: 12px 24px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            z-index: 100 !important;
+        }
+        .z-logo {
+            display: flex !important;
+            align-items: center !important;
+            gap: 8px !important;
+            color: #e8e8e8 !important;
+            text-decoration: none !important;
+            font-family: 'Orbitron', sans-serif !important;
+            font-weight: 700 !important;
+            font-size: 1.2rem !important;
+        }
+        .z-logo-icon {
+            color: #a83250 !important;
+            font-size: 24px !important;
+        }
+        .z-nav-main {
+            display: flex !important;
+            align-items: center !important;
+            gap: 12px !important;
+        }
+        .z-nav-link {
+            display: flex !important;
+            align-items: center !important;
+            gap: 6px !important;
+            padding: 8px 16px !important;
+            border-radius: 50px !important;
+            color: #c0c0c0 !important;
+            text-decoration: none !important;
+            font-weight: 600 !important;
+            font-size: 0.85rem !important;
+            transition: all 0.3s !important;
+        }
+        .z-nav-link:hover {
+            background: rgba(139, 32, 53, 0.3) !important;
+            color: #fff !important;
+        }
+        .z-nav-link .material-symbols-outlined {
+            font-size: 20px !important;
+        }
+        .z-lang-switcher {
+            display: flex !important;
+            background: rgba(139, 32, 53, 0.2) !important;
+            border: 1px solid #8b2035 !important;
+            border-radius: 50px !important;
+            overflow: hidden !important;
+        }
+        .z-lang-btn {
+            padding: 6px 12px !important;
+            color: #c0c0c0 !important;
+            text-decoration: none !important;
+            font-size: 0.75rem !important;
+            font-weight: 700 !important;
+            transition: all 0.3s !important;
+        }
+        .z-lang-btn:hover, .z-lang-btn.active {
+            background: #8b2035 !important;
+            color: #fff !important;
+        }
+        .z-menu-btn {
+            background: transparent !important;
+            border: 1px solid #8b2035 !important;
+            width: 44px !important;
+            height: 44px !important;
+            border-radius: 12px !important;
+            cursor: pointer !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            color: #e8e8e8 !important;
+            transition: all 0.3s !important;
+        }
+        .z-menu-btn:hover {
+            background: #8b2035 !important;
+        }
+        .z-menu-btn .material-symbols-outlined {
+            font-size: 24px !important;
+        }
+
+        /* === ВЫПАДАЮЩЕЕ МЕНЮ === */
+        .z-dropdown {
+            display: none !important;
+            position: absolute !important;
+            top: 70px !important;
+            right: 24px !important;
+            width: 300px !important;
+            max-height: 80vh !important;
+            overflow-y: auto !important;
+            background: #2d1520 !important;
+            border: 2px solid #8b2035 !important;
+            border-radius: 16px !important;
+            padding: 16px !important;
+            z-index: 10000 !important;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.8) !important;
+        }
+        .z-dropdown.open {
+            display: block !important;
+        }
+        .z-dropdown-header {
+            font-family: 'Orbitron', sans-serif !important;
+            font-size: 1rem !important;
+            font-weight: 700 !important;
+            color: #e8e8e8 !important;
+            padding-bottom: 12px !important;
+            border-bottom: 1px solid #8b2035 !important;
+            margin-bottom: 12px !important;
+            display: flex !important;
+            align-items: center !important;
+            gap: 8px !important;
+        }
+        .z-dropdown-header .material-symbols-outlined {
+            color: #a83250 !important;
+        }
+        .z-menu-link {
+            display: flex !important;
+            align-items: center !important;
+            gap: 12px !important;
+            padding: 12px !important;
+            border-radius: 10px !important;
+            color: #e8e8e8 !important;
+            text-decoration: none !important;
+            font-size: 0.95rem !important;
+            transition: background 0.2s !important;
+            cursor: pointer !important;
+        }
+        .z-menu-link:hover {
+            background: #8b2035 !important;
+            color: #fff !important;
+        }
+        .z-menu-link .material-symbols-outlined {
+            font-size: 22px !important;
+            color: #a83250 !important;
+            flex-shrink: 0 !important;
+        }
+        .z-menu-link:hover .material-symbols-outlined {
+            color: #fff !important;
+        }
+        .z-menu-divider {
+            height: 1px !important;
+            background: #8b2035 !important;
+            margin: 10px 0 !important;
+        }
+    </style>
+</head>
+<body style="margin: 0; padding: 0; background: #1a0a0f; color: #e8e8e8; font-family: 'Rajdhani', sans-serif;">
+
+    <nav class="z-navbar">
+        <a href="/" class="z-logo">
+            <span class="material-symbols-outlined z-logo-icon">auto_awesome</span>
+            <span>ZENITH</span>
+        </a>
+
+        <div class="z-nav-main">
+            <a href="/" class="z-nav-link">
+                <span class="material-symbols-outlined">rss_feed</span>
+                <span>Лента</span>
+            </a>
+            {% if current_user.is_authenticated %}
+            <a href="/user/{{ current_user.username }}" class="z-nav-link">
+                <span class="material-symbols-outlined">person</span>
+                <span>{{ current_user.username }}</span>
+            </a>
+            {% endif %}
+            <div class="z-lang-switcher">
+                <a href="/set_lang/ru" class="z-lang-btn">RU</a>
+                <a href="/set_lang/en" class="z-lang-btn">EN</a>
+            </div>
+        </div>
+
+        <button class="z-menu-btn" onclick="window.zToggleMenu()" type="button" aria-label="Меню">
+            <span class="material-symbols-outlined">menu</span>
+        </button>
+
+        <div class="z-dropdown" id="z-dropdown">
+            <div class="z-dropdown-header">
+                <span class="material-symbols-outlined">menu_book</span>
+                <span>Меню</span>
+            </div>
+
+            {% if current_user.is_authenticated %}
+            <a href="/stats" class="z-menu-link"><span class="material-symbols-outlined">analytics</span><span>Стата</span></a>
+            <a href="/bookmarks" class="z-menu-link"><span class="material-symbols-outlined">bookmark</span><span>Закладки</span></a>
+            <a href="/collections" class="z-menu-link"><span class="material-symbols-outlined">collections_bookmark</span><span>Коллекции</span></a>
+            <a href="/achievements" class="z-menu-link"><span class="material-symbols-outlined">emoji_events</span><span>Достижения</span></a>
+            <a href="/notifications" class="z-menu-link"><span class="material-symbols-outlined">notifications</span><span>Уведомления</span></a>
+            <a href="/calendar" class="z-menu-link"><span class="material-symbols-outlined">calendar_month</span><span>Календарь</span></a>
+            <a href="/search" class="z-menu-link"><span class="material-symbols-outlined">search</span><span>Поиск</span></a>
+            <a href="/leaderboard" class="z-menu-link"><span class="material-symbols-outlined">leaderboard</span><span>Рейтинг</span></a>
+            <a href="/challenges" class="z-menu-link"><span class="material-symbols-outlined">flag</span><span>Челленджи</span></a>
+            {% if current_user.is_admin %}
+            <div class="z-menu-divider"></div>
+            <a href="/moderation" class="z-menu-link"><span class="material-symbols-outlined">gavel</span><span>Модерация</span></a>
+            <a href="/moderation/bans" class="z-menu-link"><span class="material-symbols-outlined">block</span><span>Баны</span></a>
+            {% endif %}
+            <div class="z-menu-divider"></div>
+            <a href="/logout" class="z-menu-link"><span class="material-symbols-outlined">logout</span><span>Выйти</span></a>
+            {% else %}
+            <a href="/login" class="z-menu-link"><span class="material-symbols-outlined">login</span><span>Войти</span></a>
+            <a href="/register" class="z-menu-link"><span class="material-symbols-outlined">person_add</span><span>Регистрация</span></a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <main style="padding: 40px 24px; max-width: 1200px; margin: 0 auto;">{% block content %}{% endblock %}</main>
+
+    <footer style="text-align: center; padding: 28px; color: #707070; border-top: 1px solid #8b2035; margin-top: 40px;">
+        <p>ZENITH 2026</p>
+    </footer>
+
+    <script>
+        window.zToggleMenu = function() {
+            var menu = document.getElementById('z-dropdown');
+            if (menu) {
+                menu.classList.toggle('open');
+            }
+        };
+        document.addEventListener('click', function(e) {
+            var menu = document.getElementById('z-dropdown');
+            var btn = document.querySelector('.z-menu-btn');
+            if (menu && btn && !menu.contains(e.target) && !btn.contains(e.target)) {
+                menu.classList.remove('open');
+            }
+        });
+    </script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

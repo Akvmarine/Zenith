@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Редактировать {{ collection.name }} — Zenith{% endblock %}
+{% block content %}
+<div class="container narrow">
+    <a href="/collection/{{ collection.id }}" class="back-link">← Назад</a>
+    
+    <div class="auth-card" style="max-width: 600px;">
+        <h1 class="auth-title">Редактировать коллекцию</h1>
+        <form method="POST" class="auth-form">
+            <input type="hidden" name="action" value="update">
+            <input type="text" name="name" value="{{ collection.name }}" required class="form-input">
+            <textarea name="description" placeholder="Описание" rows="3" class="form-textarea">{{ collection.description }}</textarea>
+            <label class="checkbox-label">
+                <input type="checkbox" name="public" {% if collection.is_public %}checked{% endif %}> Публичная
+            </label>
+            <button type="submit" class="btn btn-primary btn-full">Сохранить</button>
+        </form>
+    </div>
+
+    <h2 class="section-title">Посты в коллекции ({{ collection.items|length }})</h2>
+    <div class="posts-feed">
+        {% for post in posts %}
+        <article class="post-card">
+            <h3 class="post-title"><a href="/post/{{ post.id }}">{{ post.title }}</a></h3>
+            <form action="/collection/{{ collection.id }}/edit" method="POST" style="display:inline; margin-top: 10px;">
+                <input type="hidden" name="action" value="remove_post">
+                <input type="hidden" name="post_id" value="{{ post.id }}">
+                <button type="submit" class="btn-delete" onclick="return confirm('Удалить из коллекции?')">Удалить из коллекции</button>
+            </form>
+        </article>
+        {% else %}
+        <p class="no-comments">Постов пока нет</p>
+        {% endfor %}
+    </div>
+
+    <div class="create-post-card" style="margin-top: 30px;">
+        <h2 class="card-title">Добавить пост в коллекцию</h2>
+        <form action="/collection/{{ collection.id }}/edit" method="POST" class="post-form">
+            <input type="hidden" name="action" value="add_post">
+            <input type="number" name="post_id" placeholder="ID поста" required class="form-input">
+            <button type="submit" class="btn btn-primary">Добавить</button>
+        </form>
+    </div>
+
+    <div style="margin-top: 30px; text-align: center;">
+        <form action="/collection/{{ collection.id }}/edit" method="POST" style="display:inline;">
+            <input type="hidden" name="action" value="delete">
+            <button type="submit" class="btn-delete large" onclick="return confirm('Удалить коллекцию навсегда?')">Удалить коллекцию</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

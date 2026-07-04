@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Календарь — Zenith{% endblock %}
+{% block content %}
+<div class="container">
+    <header class="page-header">
+        <h1 class="page-title">
+            <span class="material-symbols-outlined" style="vertical-align: middle; margin-right: 8px;">calendar_month</span>
+            {{ month_name }} {{ year }}
+        </h1>
+        <div class="calendar-nav">
+            {% if month == 1 %}
+            <a href="/calendar?year={{ year - 1 }}&month=12" class="btn btn-primary">← Декабрь {{ year - 1 }}</a>
+            {% else %}
+            <a href="/calendar?year={{ year }}&month={{ month - 1 }}" class="btn btn-primary">← {{ ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'][month - 2] }}</a>
+            {% endif %}
+            {% if month == 12 %}
+            <a href="/calendar?year={{ year + 1 }}&month=1" class="btn btn-primary">Январь {{ year + 1 }} →</a>
+            {% else %}
+            <a href="/calendar?year={{ year }}&month={{ month + 1 }}" class="btn btn-primary">{{ ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'][month] }} →</a>
+            {% endif %}
+        </div>
+    </header>
+    
+    <div class="calendar-grid">
+        <div class="calendar-header">
+            <div>Пн</div><div>Вт</div><div>Ср</div><div>Чт</div><div>Пт</div><div>Сб</div><div>Вс</div>
+        </div>
+        {% for week in calendar %}
+        <div class="calendar-week">
+            {% for day in week %}
+            <div class="calendar-day {% if day == 0 %}empty{% endif %} {% if day == now_msk().day and month == now_msk().month and year == now_msk().year %}today{% endif %}">
+                {% if day > 0 %}
+                <div class="calendar-day-number">{{ day }}</div>
+                {% if day in posts_by_day %}
+                <div class="calendar-day-posts">
+                    {% for post in posts_by_day[day][:3] %}
+                    <a href="/post/{{ post.id }}" class="calendar-post-link" title="{{ post.title }}">
+                        {{ post.title[:30] }}
+                    </a>
+                    {% endfor %}
+                    {% if posts_by_day[day]|length > 3 %}
+                    <div class="calendar-more">+{{ posts_by_day[day]|length - 3 }} ещё</div>
+                    {% endif %}
+                </div>
+                {% endif %}
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

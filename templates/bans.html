@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}{{ t('banned_users') }} — Zenith{% endblock %}
+{% block content %}
+<div class="container">
+    <header class="page-header">
+        <h1 class="page-title"> {{ t('banned_users') }}</h1>
+    </header>
+    
+    <div class="bans-list">
+        {% for ban in bans %}
+        <div class="ban-card">
+            <div class="ban-user">
+                <a href="/user/{{ ban.user.username }}" class="ban-username">{{ ban.user.username }}</a>
+                {% if ban.user.is_admin %}<span class="admin-badge">АДМИН</span>{% endif %}
+            </div>
+            <div class="ban-info">
+                <span class="ban-reason">{{ ban.reason or 'Без причины' }}</span>
+                <time class="ban-date">{{ format_msk(ban.created_at) }}</time>
+                <span class="ban-by">Забанил: {{ ban.banned_by_user.username }}</span>
+            </div>
+            <form action="/moderation/unban/{{ ban.user_id }}" method="POST" style="display:inline;">
+                <button type="submit" class="btn-bookmark" onclick="return confirm('Разбанить?')">{{ t('unban_user') }}</button>
+            </form>
+        </div>
+        {% else %}
+        <p class="no-comments">Забаненных пользователей нет</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

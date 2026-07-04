@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}{{ t('moderation') }} — Zenith{% endblock %}
+{% block content %}
+<div class="container">
+    <header class="page-header">
+        <h1 class="page-title">⚖️ {{ t('moderation') }}</h1>
+    </header>
+
+    <h2 class="section-title">{{ t('pending_reports') }} ({{ pending|length }})</h2>
+    <div class="reports-list">
+        {% for report in pending %}
+        <div class="report-card">
+            <div class="report-header">
+                <span class="report-id">#{{ report.id }}</span>
+                <span class="report-reason">{{ report.reason }}</span>
+                <time class="report-date">{{ format_msk(report.created_at) }}</time>
+            </div>
+            <div class="report-info">
+                <span class="reporter">{{ t('reporter') }}: {{ report.reporter.username }}</span>
+                {% if report.post_id %}<a href="/post/{{ report.post_id }}" class="report-link">Пост #{{ report.post_id }}</a>{% endif %}
+            </div>
+            {% if report.description %}<p class="report-desc">{{ report.description }}</p>{% endif %}
+            <div class="report-actions">
+                {% if report.post_id %}
+                <form action="/moderation/action/{{ report.id }}" method="POST" style="display:inline;">
+                    <input type="hidden" name="action" value="delete_post">
+                    <button type="submit" class="btn-delete" onclick="return confirm('Удалить пост?')">{{ t('delete_content') }}</button>
+                </form>
+                {% endif %}
+                {% if report.comment_id %}
+                <form action="/moderation/action/{{ report.id }}" method="POST" style="display:inline;">
+                    <input type="hidden" name="action" value="delete_comment">
+                    <button type="submit" class="btn-delete" onclick="return confirm('Удалить комментарий?')">{{ t('delete_content') }}</button>
+                </form>
+                {% endif %}
+                <form action="/moderation/action/{{ report.id }}" method="POST" style="display:inline;">
+                    <input type="hidden" name="action" value="ban">
+                    <button type="submit" class="btn-delete" onclick="return confirm('Забанить пользователя?')">{{ t('ban_user') }}</button>
+                </form>
+                <form action="/moderation/action/{{ report.id }}" method="POST" style="display:inline;">
+                    <input type="hidden" name="action" value="dismiss">
+                    <button type="submit" class="btn-bookmark">{{ t('dismiss') }}</button>
+                </form>
+            </div>
+        </div>
+        {% else %}
+        <p class="no-comments">Нет ожидающих жалоб</p>
+        {% endfor %}
+    </div>
+
+    <h2 class="section-title" style="margin-top: 40px;">{{ t('resolved_reports') }}</h2>
+    <div class="reports-list">
+        {% for report in resolved %}
+        <div class="report-card resolved">
+            <div class="report-header">
+                <span class="report-id">#{{ report.id }}</span>
+                <span class="report-status status-{{ report.status }}">{{ report.status }}</span>
+                <time class="report-date">{{ format_msk(report.resolved_at) if report.resolved_at else '' }}</time>
+            </div>
+            <div class="report-info">
+                <span>{{ report.reporter.username }} → {{ report.reason }}</span>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

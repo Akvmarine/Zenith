@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Поиск — Zenith{% endblock %}
+{% block content %}
+<div class="container">
+    <header class="page-header">
+        <h1 class="page-title">
+            <span class="material-symbols-outlined" style="vertical-align: middle; margin-right: 8px;">search</span>
+            Расширенный поиск
+        </h1>
+    </header>
+    
+    <div class="search-filters">
+        <form method="GET" action="/search" class="search-form">
+            <input type="text" name="q" placeholder="Поиск по тексту..." value="{{ query }}" class="form-input">
+            <input type="text" name="author" placeholder="Автор..." value="{{ author }}" class="form-input">
+            <select name="topic" class="form-input">
+                <option value="">Все темы</option>
+                {% for topic in topics %}
+                <option value="{{ topic }}" {% if topic == topic %}selected{% endif %}>{{ topic }}</option>
+                {% endfor %}
+            </select>
+            <input type="date" name="date_from" value="{{ date_from }}" class="form-input">
+            <input type="date" name="date_to" value="{{ date_to }}" class="form-input">
+            <input type="number" name="min_likes" placeholder="Мин. лайков" value="{{ min_likes }}" class="form-input">
+            <button type="submit" class="btn btn-primary">Найти</button>
+        </form>
+    </div>
+    
+    <div class="posts-feed">
+        {% for post in posts %}
+        <article class="post-card">
+            <div class="post-header"><span class="post-topic">{{ post.topic }}</span><time class="post-date">{{ format_msk(post.created_at) }}</time></div>
+            <h3 class="post-title"><a href="/post/{{ post.id }}">{{ post.title }}</a></h3>
+            <p class="post-author"><a href="/user/{{ post.author.username }}">👤 {{ post.author.username }}</a></p>
+            <p class="post-content">{{ post.content[:200] }}...</p>
+            <div class="post-footer">
+                <span class="btn-like">❤️ {{ post.likes }}</span>
+                <a href="/post/{{ post.id }}" class="btn-comments"> {{ post.comments|length }}</a>
+            </div>
+        </article>
+        {% else %}
+        <p class="no-comments">Ничего не найдено</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

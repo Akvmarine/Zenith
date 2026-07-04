@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Уведомления{% endblock %}
+{% block content %}
+<div class="container narrow">
+    <header class="page-header">
+        <h1 class="page-title">Уведомления</h1>
+    </header>
+    <div class="notif-list">
+        {% for n in notifs %}
+        <div class="notif-card {% if not n.is_read %}unread{% endif %}">
+            <div class="notif-icon">
+                {% if n.type == 'like' %}<span class="material-symbols-outlined stat-icon" style="color: #ff6666;">favorite</span>{% elif n.type == 'comment' %}💬{% elif n.type == 'follow' %}👥{% elif n.type == 'achievement' %}🏆{% endif %}
+            </div>
+            <div class="notif-content">
+                <div class="notif-text">{{ n.message }}</div>
+                <time class="notif-date">{{ format_msk(n.created_at) }}</time>
+            </div>
+            {% if n.post_id %}
+            <a href="/post/{{ n.post_id }}" class="notif-link">→</a>
+            {% endif %}
+        </div>
+        {% else %}
+        <p class="no-comments">Уведомлений нет</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}{{ t('report') }} — Zenith{% endblock %}
+{% block content %}
+<div class="container narrow">
+    <a href="{{ url_for('post_page', post_id=post.id) }}" class="back-link">← {{ t('back') }}</a>
+    
+    <div class="auth-card">
+        <h1 class="auth-title">
+            {% if comment %}{{ t('report_comment') }}{% else %}{{ t('report_post') }}{% endif %}
+        </h1>
+        
+        <div class="report-preview">
+            {% if comment %}
+            <p><strong>{{ comment.author_name }}:</strong> {{ comment.text[:200] }}</p>
+            {% else %}
+            <h3>{{ post.title }}</h3>
+            <p>{{ post.content[:200] }}</p>
+            {% endif %}
+        </div>
+        
+        <form method="POST" class="auth-form">
+            <label class="report-label">{{ t('report_reason') }}:</label>
+            <div class="report-reasons">
+                <label class="radio-label">
+                    <input type="radio" name="reason" value="spam" required> {{ t('spam') }}
+                </label>
+                <label class="radio-label">
+                    <input type="radio" name="reason" value="offensive"> {{ t('offensive') }}
+                </label>
+                <label class="radio-label">
+                    <input type="radio" name="reason" value="illegal"> {{ t('illegal') }}
+                </label>
+                <label class="radio-label">
+                    <input type="radio" name="reason" value="other"> {{ t('other') }}
+                </label>
+            </div>
+            <textarea name="description" placeholder="Описание (необязательно)" rows="3" class="form-textarea"></textarea>
+            <button type="submit" class="btn btn-primary btn-full">{{ t('send_report') }}</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
